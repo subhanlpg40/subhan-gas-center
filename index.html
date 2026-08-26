@@ -298,6 +298,19 @@ footer{background:var(--ink); color:#C7D0DE; padding:64px 0 0;}
   .form-row{grid-template-columns:1fr;}
   .rate-right{display:none;}
 }
+
+
+/* ===== PROMO VIDEO SECTION ===== */
+.promo-video-section{padding:70px 0 80px; background:linear-gradient(180deg,#0F1A2E 0%,#152238 100%); position:relative; overflow:hidden;}
+.promo-video-section::before{content:''; position:absolute; top:-100px; right:-100px; width:400px; height:400px; background:radial-gradient(circle,rgba(240,121,60,0.15),transparent 70%); pointer-events:none;}
+.promo-video-section .sec-title{color:#fff; text-align:center; margin-bottom:12px;}
+.promo-video-section .sec-sub{color:#93A0B3; text-align:center; max-width:520px; margin:0 auto 36px; font-size:15.5px; line-height:1.65;}
+.video-frame{position:relative; max-width:920px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.08);}
+.video-frame video{width:100%; height:auto; display:block; aspect-ratio:16/9; object-fit:cover; background:#000;}
+.video-sound-btn{position:absolute; bottom:18px; right:18px; z-index:5; background:rgba(0,0,0,0.55); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); color:#fff; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:20px; transition:all .2s;}
+.video-sound-btn:hover{background:var(--flame-orange); border-color:var(--flame-orange); transform:scale(1.08);}
+.video-label{position:absolute; top:16px; left:16px; background:rgba(240,121,60,0.9); color:#fff; font-family:var(--font-mono); font-size:11px; font-weight:700; padding:6px 12px; border-radius:100px; letter-spacing:0.04em;}
+
 </style>
 </head>
 <body>
@@ -321,9 +334,9 @@ footer{background:var(--ink); color:#C7D0DE; padding:64px 0 0;}
   <div class="wrap">
     <div class="rate-left"><span class="live-dot"></span> LIVE RATE — <b id="rateBarAmt">Rs 380</b>&nbsp;/ kg</div>
     <div class="rate-right">
-      <a href="https://wa.me/923204722122" target="_blank" rel="noopener">💬 WhatsApp</a>
-      <a href="tel:03204722122">📞 0320-4722122</a>
-      <a href="tel:03412544249">📞 0341-2544249</a>
+      <a href="https://wa.me/923412527305" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a href="tel:03412527305">📞 0341-2527305</a>
+      <a href="tel:03412527305">📞 0341-2527305</a>
     </div>
   </div>
 </div>
@@ -588,6 +601,22 @@ footer{background:var(--ink); color:#C7D0DE; padding:64px 0 0;}
   </div>
 </section>
 
+
+<!-- ===================== PROMO VIDEO SECTION ===================== -->
+<section class="promo-video-section" id="promoVideo">
+  <div class="wrap">
+    <h2 class="sec-title reveal">See Subhan Gas in Action</h2>
+    <p class="sec-sub reveal">Real team, real cylinders, real delivery — watch how we serve Karachi every day.</p>
+    <div class="video-frame reveal">
+      <span class="video-label">▶ PROMO</span>
+      <video id="promoVideoPlayer" autoplay muted loop playsinline preload="auto">
+        <source src="hero-bg.mp4" type="video/mp4">
+      </video>
+      <button class="video-sound-btn" id="promoSoundBtn" title="Unmute / Mute" aria-label="Toggle sound">🔇</button>
+    </div>
+  </div>
+</section>
+
 <section id="how">
   <div class="wrap">
     <div class="reveal">
@@ -682,7 +711,7 @@ footer{background:var(--ink); color:#C7D0DE; padding:64px 0 0;}
       </div>
       <div class="contact-card reveal">
         <div class="ic">📞</div>
-        <div><h4>Call / WhatsApp</h4><p><a href="tel:03204722122">0320-4722122</a>, <a href="tel:03412544249">0341-2544249</a>, <a href="tel:03412527305">0341-2527305</a><br>Operations Manager: Ch. Muhammad Asif</p></div>
+        <div><h4>Call / WhatsApp</h4><p><a href="tel:03412527305">0341-2527305</a>, <a href="tel:03412527305">0341-2527305</a>, <a href="tel:03412527305">0341-2527305</a><br>Operations Manager: Ch. Muhammad Asif</p></div>
       </div>
     </div>
   </div>
@@ -708,8 +737,8 @@ footer{background:var(--ink); color:#C7D0DE; padding:64px 0 0;}
       </div>
       <div class="foot-col">
         <h5>Contact</h5>
-        <a href="tel:03204722122">📞 0320-4722122</a>
-        <a href="tel:03412544249">📞 0341-2544249</a>
+        <a href="tel:03412527305">📞 0341-2527305</a>
+        <a href="tel:03412527305">📞 0341-2527305</a>
         <a href="tel:03412527305">📞 0341-2527305</a>
         <a href="mailto:ranarizi94@gmail.com">✉️ ranarizi94@gmail.com</a>
       </div>
@@ -727,7 +756,7 @@ footer{background:var(--ink); color:#C7D0DE; padding:64px 0 0;}
   </div>
 </footer>
 
-<a class="float-wa" href="https://wa.me/923204722122" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
+<a class="float-wa" href="https://wa.me/923412527305" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">💬</a>
 
 <script>
 /* ---------------- LOADER ---------------- */
@@ -771,7 +800,7 @@ document.querySelectorAll('.magnetic').forEach(btn=>{
 /* Live rate + order sync — connected to Google Sheets */
 const RATE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRoBYKj8xeIScvfdkBMwXzyVGgLF-yVhjvMh1aLpq1WLodz-4C5799elYfyD0bcHgzWZ_qEbcA4uhDo/pub?gid=0&single=true&output=csv";
 const ORDER_LOG_URL = "https://script.google.com/macros/s/AKfycbyYHuBN3o5bJswFiyPncctflIzflxpFHZbhDtx2C-5ZQbm81Lfj5r9UYEY4Uoa_6JfV7Q/exec";
-const WHATSAPP_NUMBER = "923412544249";
+const WHATSAPP_NUMBER = "923412527305";  // 0341-2527305
 
 let RATE_MAP = { 45:380, 15:380, 11.8:380, 6:380, 4:380, 2:380 }; // default fallback, overwritten by the Sheet on load
 function rateFor(kg){ return RATE_MAP[kg] ?? 380; }
@@ -1116,6 +1145,23 @@ async function submitOrder(){
 }
 
 document.getElementById('confirmOrderBtn').addEventListener('click', submitOrder);
+
+
+/* ===== PROMO VIDEO SOUND TOGGLE ===== */
+const promoVideo = document.getElementById('promoVideoPlayer');
+const promoSoundBtn = document.getElementById('promoSoundBtn');
+if(promoVideo && promoSoundBtn){
+  promoSoundBtn.addEventListener('click', ()=>{
+    if(promoVideo.muted){
+      promoVideo.muted = false;
+      promoSoundBtn.textContent = '🔊';
+    } else {
+      promoVideo.muted = true;
+      promoSoundBtn.textContent = '🔇';
+    }
+  });
+}
+
 </script>
 </body>
 </html>
