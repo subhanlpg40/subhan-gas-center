@@ -188,6 +188,12 @@ section{padding:84px 0;}
 .pcard hr{border:none; border-top:1px solid var(--line); margin:14px 0;}
 .pcard-ctas{display:flex; gap:8px; margin-top:18px;}
 .pcard-ctas .btn{flex:1; justify-content:center; font-size:12.5px; padding:10px 12px;}
+.pcard.out-of-stock{opacity:0.62; filter:grayscale(0.25);}
+.pcard.out-of-stock:hover{border-color:var(--line); box-shadow:var(--shadow-sm);}
+.out-badge{position:absolute; top:14px; right:14px; background:#B3261E; color:#fff; font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; letter-spacing:0.03em; z-index:2;}
+.pcard-ctas button:disabled{opacity:0.45; cursor:not-allowed; pointer-events:none;}
+.size-pill.out-of-stock{opacity:0.45; pointer-events:none;}
+.size-pill.out-of-stock .kg::after{content:" · Out"; font-size:10px; color:#B3261E;}
 
 /* ============ REAL PHOTO SECTION ============ */
 .realshot{display:grid; grid-template-columns:0.9fr 1.1fr; gap:44px; align-items:center;}
@@ -771,23 +777,26 @@ let RATE_MAP = { 45:380, 15:380, 11.8:380, 6:380, 4:380, 2:380 }; // default fal
 function rateFor(kg){ return RATE_MAP[kg] ?? 380; }
 
 const CYLINDERS = [
-  { kg:2,    label:'Portable / Camping',            cylinderPrice:1800, desc:'Ultra-light bottle for camping trips, portable stoves and outdoor cooking.' },
-  { kg:4,    label:'Portable / Camping',             cylinderPrice:2600, desc:'Compact cylinder for small households, food carts and outdoor setups.' },
-  { kg:6,    label:'Standard Domestic',              cylinderPrice:3100, desc:'Everyday size for small families and single-unit kitchens.' },
-  { kg:11.8, label:'Standard Domestic',              cylinderPrice:3600, desc:'The most common household size — reliable for daily cooking.' },
-  { kg:15,   label:'Commercial / Heavy Domestic',    cylinderPrice:4300, desc:'For larger households, small restaurants and joint families.' },
-  { kg:45,   label:'Industrial / Commercial',        cylinderPrice:9500, desc:'Vertical industrial tank for hotels, restaurants and factories.' },
+  { kg:2,    label:'Portable / Camping',            cylinderPrice:1800, desc:'Ultra-light bottle for camping trips, portable stoves and outdoor cooking.', inStock: true },
+  { kg:4,    label:'Portable / Camping',             cylinderPrice:2600, desc:'Compact cylinder for small households, food carts and outdoor setups.', inStock: true },
+  { kg:6,    label:'Standard Domestic',              cylinderPrice:3100, desc:'Everyday size for small families and single-unit kitchens.', inStock: true },
+  { kg:11.8, label:'Standard Domestic',              cylinderPrice:3600, desc:'The most common household size — reliable for daily cooking.', inStock: true },
+  { kg:15,   label:'Commercial / Heavy Domestic',    cylinderPrice:4300, desc:'For larger households, small restaurants and joint families.', inStock: true },
+  { kg:45,   label:'Industrial / Commercial',        cylinderPrice:9500, desc:'Vertical industrial tank for hotels, restaurants and factories.', inStock: true },
 ];
-function findCyl(kg){ return CYLINDERS.find(c => Math.abs(c.kg - kg) < 0.01); }
+function findCyl(kg){ return CYLINDERS.find(c => Math.abs(c.kg - kg) < 0.6); }  // wider tolerance for 45 vs 45.4/45.5
 function fmtKg(kg){ return (kg % 1 === 0) ? kg+'kg' : kg+'kg'; }
 
 /* ---------------- SIZE STRIP ---------------- */
 const stripEl = document.getElementById('sizesStrip');
-stripEl.innerHTML = CYLINDERS.map((c,i)=>`
-  <div class="size-pill ${c.kg===11.8?'active':''}" data-kg="${c.kg}" onclick="selectSwitcherSize(${c.kg})">
-    <div class="kg">${fmtKg(c.kg)}</div>
-    <div class="kg-label">${c.label}</div>
-  </div>`).join('');
+function renderSizeStrip(){
+  stripEl.innerHTML = CYLINDERS.map((c,i)=>`
+    <div class="size-pill ${c.kg===11.8?'active':''} ${c.inStock?'':'out-of-stock'}" data-kg="${c.kg}" onclick="${c.inStock?`selectSwitcherSize(${c.kg})`:''}">
+      <div class="kg">${fmtKg(c.kg)}</div>
+      <div class="kg-label">${c.label}</div>
+    </div>`).join('');
+}
+renderSizeStrip();
 
 /* ---------------- PRODUCT GRID ---------------- */
 const gridEl = document.getElementById('productGrid');
@@ -795,17 +804,24 @@ function renderProductGrid(){
   gridEl.innerHTML = CYLINDERS.map(c=>{
     const gasCost = Math.round(c.kg*rateFor(c.kg));
     const newTotal = gasCost + c.cylinderPrice;
+    const stockClass = c.inStock ? '' : ' out-of-stock';
+    const stockBadge = c.inStock ? '' : '<span class="out-badge">Out of Stock</span>';
+    const buttons = c.inStock
+      ? `<button class="btn btn-ghost" onclick="jumpToOrder(${c.kg},'refill')">Refill</button>
+         <button class="btn btn-flame" onclick="jumpToOrder(${c.kg},'delivery')">Order New</button>`
+      : `<button class="btn btn-ghost" disabled>Refill</button>
+         <button class="btn btn-flame" disabled>Order New</button>`;
     return `
-    <div class="pcard reveal in">
+    <div class="pcard reveal in${stockClass}">
       <span class="kg-badge">${c.label}</span>
+      ${stockBadge}
       <h3>${fmtKg(c.kg)} Cylinder</h3>
       <p class="desc">${c.desc}</p>
       <div class="price-row"><span class="lbl">Gas fill (refill)</span><span class="amt flame">Rs ${gasCost.toLocaleString('en-IN')}</span></div>
       <div class="price-row"><span class="lbl">New cylinder + gas</span><span class="amt">Rs ${newTotal.toLocaleString('en-IN')}</span></div>
       <hr>
       <div class="pcard-ctas">
-        <button class="btn btn-ghost" onclick="jumpToOrder(${c.kg},'refill')">Refill</button>
-        <button class="btn btn-flame" onclick="jumpToOrder(${c.kg},'delivery')">Order New</button>
+        ${buttons}
       </div>
     </div>`;
   }).join('');
@@ -992,7 +1008,8 @@ function parseRateCSV(text){
     return {
       kg: parseFloat(cols[0]),
       rate: parseFloat(cols[1]),
-      cylinderPrice: parseFloat(cols[2])
+      cylinderPrice: parseFloat(cols[2]),
+      available: ((cols[4] || 'Yes').trim().toLowerCase() === 'yes')
     };
   }).filter(r=> !isNaN(r.kg) && !isNaN(r.rate));
 }
@@ -1008,8 +1025,13 @@ async function fetchAndApplyRates(){
     rows.forEach(r=>{
       RATE_MAP[r.kg] = r.rate;
       const cyl = findCyl(r.kg);
-      if(cyl && !isNaN(r.cylinderPrice)) cyl.cylinderPrice = r.cylinderPrice;
+      if(cyl){
+        if(!isNaN(r.cylinderPrice)) cyl.cylinderPrice = r.cylinderPrice;
+        cyl.inStock = r.available;
+      }
     });
+    // Also update size strip after stock flags change
+    if(typeof renderSizeStrip === 'function') renderSizeStrip();
 
     // Use the 11.8kg rate (most common domestic size) as the headline "today's rate"
     const headline = rows.find(r=> Math.abs(r.kg - 11.8) < 0.01) || rows[0];
